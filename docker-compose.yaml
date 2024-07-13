@@ -1,0 +1,78 @@
+# version: '3.8'
+
+# services:
+#   frontend:
+#     image: sayedul45/frontend-test:latest
+#     ports:
+#       - 5000:5000
+#     stdin_open: true
+#     volumes:
+#       - ./frontend:/code
+#       - /code/node_modules
+#     restart: always
+#     networks:
+#       - react-express
+#     depends_on:
+#       - backend
+
+#   backend:
+#     image: sayedul45/backend-test:latest
+#     volumes:
+#       - ./backend:/code
+#       - /code/node_modules
+#     restart: always
+#     networks:
+#       - express-mongo
+#       - react-express
+#     expose:
+#       - 3000
+
+#   mongo:
+#     image: mongo:4.2.0
+#     volumes:
+#       - mongo_data:/data/db
+#     networks:
+#       - express-mongo
+#     expose:
+#       - 27017
+#     restart: always
+
+# networks:
+#   react-express:
+#   express-mongo:
+
+# volumes:
+#   mongo_data:
+
+
+
+version: "3.8"
+services:
+  mongodb:
+    image: "mongo"
+    volumes:
+      - data:/data/db
+  backend:
+    build: ./backend
+    ports:
+      - "80:80"
+    volumes:
+      - logs:/app/logs
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+volumes:
+  data:
+  logs:
